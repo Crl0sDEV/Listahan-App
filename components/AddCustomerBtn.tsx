@@ -28,19 +28,18 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-// 1. Validation Schema
 const formSchema = z.object({
   name: z.string().min(2, "Masyadong maikli ang pangalan boss."),
-  phone_number: z.string().optional(), // Optional kasi baka wala pang cellphone
+  phone_number: z.string().optional(),
 })
 
 interface Props {
     onSuccess?: () => void
-  }
+}
 
 export default function AddCustomerBtn({ onSuccess }: Props) {
-  const [open, setOpen] = useState(false) // State para sa open/close ng modal
-  const router = useRouter() // Pang refresh ng data
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,10 +49,8 @@ export default function AddCustomerBtn({ onSuccess }: Props) {
     },
   })
 
-  // 2. Submit Logic
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // Kunin muna sino naka-login (kailangan ng user_id sa database)
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
@@ -61,23 +58,21 @@ export default function AddCustomerBtn({ onSuccess }: Props) {
         return
       }
 
-      // Insert sa Database
       const { error } = await supabase.from("customers").insert({
         name: values.name,
         phone_number: values.phone_number,
-        user_id: user.id, // Importante 'to para sayo lang yung customer
+        user_id: user.id,
       })
 
       if (error) throw error
 
-      // Success!
       toast.success("Customer Added!", {
         description: `${values.name} is now in your list.`,
       })
 
-      setOpen(false) // Close modal
-      form.reset()   // Clear form
-      router.refresh() // Refresh page data (pag meron na tayong listahan)
+      setOpen(false)
+      form.reset()
+      router.refresh()
 
       if (onSuccess) onSuccess() 
 
@@ -101,10 +96,11 @@ export default function AddCustomerBtn({ onSuccess }: Props) {
             <Plus className="mr-2 h-4 w-4"/> Add Customer
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-106.25">
+      
+      <DialogContent className="sm:max-w-106.25 bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-900 dark:text-slate-100">
         <DialogHeader>
           <DialogTitle>New Customer</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-slate-500 dark:text-slate-400">
             Ilagay ang detalye ng suki mo dito.
           </DialogDescription>
         </DialogHeader>
@@ -118,9 +114,13 @@ export default function AddCustomerBtn({ onSuccess }: Props) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Customer Name</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Customer Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Juan Dela Cruz" {...field} />
+                    <Input 
+                        placeholder="Juan Dela Cruz" 
+                        {...field} 
+                        className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-white"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,9 +133,13 @@ export default function AddCustomerBtn({ onSuccess }: Props) {
               name="phone_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone (Optional)</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Phone (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="0912..." {...field} />
+                    <Input 
+                        placeholder="0912..." 
+                        {...field} 
+                        className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-white"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

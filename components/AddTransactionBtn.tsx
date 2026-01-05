@@ -20,15 +20,12 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-// 1. Props Interface
-// Ano ang kailangan ipasa sa component na ito?
 interface Props {
   customerId: string
   type: "UTANG" | "BAYAD"
-  onSuccess: () => void // Function na tatawagin pag success (para mag refresh ang table)
+  onSuccess: () => void
 }
 
-// 2. Validation Schema
 const formSchema = z.object({
   amount: z.number().min(1, "Dapat may amount boss."),
   description: z.string().optional(),
@@ -39,7 +36,6 @@ type FormValues = z.infer<typeof formSchema>
 export default function AddTransactionBtn({ customerId, type, onSuccess }: Props) {
   const [open, setOpen] = useState(false)
 
-  // Logic para sa kulay at text (Dynamic)
   const isUtang = type === "UTANG"
   const colorClass = isUtang ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
   const label = isUtang ? "Mag-Utang" : "Mag-Bayad"
@@ -59,11 +55,10 @@ export default function AddTransactionBtn({ customerId, type, onSuccess }: Props
       } = await supabase.auth.getUser()
       if (!user) return
 
-      // Insert sa Database
       const { error } = await supabase.from("transactions").insert({
         customer_id: customerId,
         user_id: user.id,
-        type: type, // 'UTANG' or 'BAYAD'
+        type: type,
         amount: values.amount,
         description: values.description || (isUtang ? "Utang" : "Payment"),
       })
@@ -76,7 +71,7 @@ export default function AddTransactionBtn({ customerId, type, onSuccess }: Props
 
       setOpen(false)
       form.reset()
-      onSuccess() // Refresh parent data
+      onSuccess()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "An error occurred"
       toast.error("Error", { description: errorMessage })
@@ -92,27 +87,31 @@ export default function AddTransactionBtn({ customerId, type, onSuccess }: Props
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-106.25">
+      <DialogContent className="sm:max-w-106.25 bg-white dark:bg-slate-900 dark:border-slate-800 text-slate-900 dark:text-slate-100">
         <DialogHeader>
           <DialogTitle>{label}</DialogTitle>
-          <DialogDescription>Input amount and details.</DialogDescription>
+          <DialogDescription className="text-slate-500 dark:text-slate-400">
+            Input amount and details.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            
             {/* Amount Field */}
             <FormField
               control={form.control}
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount (₱)</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Amount (₱)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="0.00"
                       {...field}
                       onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                      className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -126,9 +125,13 @@ export default function AddTransactionBtn({ customerId, type, onSuccess }: Props
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel className="text-slate-700 dark:text-slate-300">Description</FormLabel>
                   <FormControl>
-                    <Input placeholder={isUtang ? "e.g. 2 Corned Beef" : "e.g. Partial Payment"} {...field} />
+                    <Input 
+                        placeholder={isUtang ? "e.g. 2 Corned Beef" : "e.g. Partial Payment"} 
+                        {...field} 
+                        className="bg-white dark:bg-slate-950 dark:border-slate-800 dark:text-white"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

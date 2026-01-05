@@ -80,7 +80,7 @@ export default function CustomerList({ refreshTrigger }: Props) {
         <Input
           type="search"
           placeholder="Search customer name..."
-          className="pl-9 bg-white"
+          className="pl-9 bg-white dark:bg-slate-900 dark:border-slate-800 dark:text-white"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -95,7 +95,7 @@ export default function CustomerList({ refreshTrigger }: Props) {
         </div>
       ) : customers.length === 0 ? (
         // EMPTY STATE
-        <div className="text-center py-10 border rounded-lg bg-white border-dashed">
+        <div className="text-center py-10 border rounded-lg bg-white dark:bg-slate-900 dark:border-slate-800 border-dashed">
           <User className="h-10 w-10 text-slate-300 mx-auto mb-3" />
           <p className="text-slate-500">
             {searchQuery ? "No customer found." : "Wala pang customers, boss."}
@@ -108,7 +108,7 @@ export default function CustomerList({ refreshTrigger }: Props) {
         </div>
       ) : (
         // DATA TABLE
-        <div className="rounded-md border bg-white">
+        <div className="rounded-md border bg-white dark:bg-slate-900 dark:border-slate-800">
           <Table>
             <TableHeader>
               <TableRow>
@@ -120,10 +120,10 @@ export default function CustomerList({ refreshTrigger }: Props) {
             <TableBody>
               {customers.map((customer) => (
                 <TableRow
-                  key={customer.id}
-                  className="cursor-pointer hover:bg-slate-50"
-                  onClick={() => router.push(`/customer/${customer.id}`)}
-                >
+                key={customer.id}
+                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                onClick={() => router.push(`/customer/${customer.id}`)}
+              >
                   <TableCell className="font-medium">{customer.name}</TableCell>
                   <TableCell>{customer.phone_number || "-"}</TableCell>
                   <TableCell className="text-right text-slate-500">

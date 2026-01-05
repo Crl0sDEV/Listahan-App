@@ -84,18 +84,18 @@ export default function CustomerDetailPage() {
 
   if (loading) {
     return (
-        <div className="min-h-screen bg-slate-50 p-6">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
             <div className="max-w-3xl mx-auto space-y-6">
-                 <Skeleton className="h-10 w-40 mb-4" />
-                 <Skeleton className="h-32 w-full rounded-xl" />
-                 <Skeleton className="h-64 w-full rounded-xl" />
+                 <Skeleton className="h-10 w-40 mb-4 bg-slate-200 dark:bg-slate-800" />
+                 <Skeleton className="h-32 w-full rounded-xl bg-slate-200 dark:bg-slate-800" />
+                 <Skeleton className="h-64 w-full rounded-xl bg-slate-200 dark:bg-slate-800" />
             </div>
         </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 transition-colors">
       <div className="max-w-3xl mx-auto space-y-6">
         
         <div className="flex items-center gap-4">
@@ -103,22 +103,22 @@ export default function CustomerDetailPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{customer?.name}</h1>
-            <p className="text-slate-500 text-sm">{customer?.phone_number || "No contact info"}</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{customer?.name}</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">{customer?.phone_number || "No contact info"}</p>
           </div>
         </div>
 
-        <Card className={totalBalance > 0 ? "border-l-4 border-l-red-500 shadow-sm" : "border-l-4 border-l-green-500 shadow-sm"}>
+        <Card className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${totalBalance > 0 ? "border-l-4 border-l-red-500" : "border-l-4 border-l-green-500"}`}>
             <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-500">
+                <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     Current Balance (Utang)
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className={`text-4xl font-bold ${totalBalance > 0 ? "text-red-600" : "text-green-600"}`}>
+                <div className={`text-4xl font-bold ${totalBalance > 0 ? "text-red-600 dark:text-red-500" : "text-green-600 dark:text-green-500"}`}>
                     ₱ {totalBalance.toLocaleString()}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     {totalBalance > 0 ? "Need singilin!" : "Goods, walang utang."}
                 </p>
             </CardContent>
@@ -137,32 +137,33 @@ export default function CustomerDetailPage() {
             />
         </div>
 
-        <div className="bg-white rounded-md border shadow-sm">
-            <div className="p-4 border-b font-medium bg-slate-50/50">Transaction History</div>
+        <div className="bg-white dark:bg-slate-900 rounded-md border dark:border-slate-800 shadow-sm overflow-hidden">
+            <div className="p-4 border-b dark:border-slate-800 font-medium bg-slate-50/50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+                Transaction History
+            </div>
             <Table>
-                <TableHeader>
-                    <TableRow>
-                        {/* TINANGGAL KO COMMENTS DITO PARA DI MAG ERROR */}
-                        <TableHead>Date</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
+                <TableHeader className="bg-slate-50 dark:bg-slate-950">
+                    <TableRow className="hover:bg-transparent border-b dark:border-slate-800">
+                        <TableHead className="text-slate-500 dark:text-slate-400">Date</TableHead>
+                        <TableHead className="text-slate-500 dark:text-slate-400">Description</TableHead>
+                        <TableHead className="text-right text-slate-500 dark:text-slate-400">Amount</TableHead>
                         <TableHead className="w-12.5"></TableHead> 
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {transactions.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={4} className="text-center py-10 text-slate-500">
+                            <TableCell colSpan={4} className="text-center py-10 text-slate-500 dark:text-slate-400">
                                 Wala pang transactions. Clean record!
                             </TableCell>
                         </TableRow>
                     ) : (
                         transactions.map((t) => (
-                            <TableRow key={t.id}>
-                                <TableCell className="text-xs text-slate-500">
-                      {t.created_at
-                        ? format(new Date(t.created_at), "MMM d, h:mm a")
-                        : "-"}
+                            <TableRow key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b dark:border-slate-800 transition-colors">
+                                <TableCell className="text-xs text-slate-500 dark:text-slate-400">
+                                    {t.created_at
+                                        ? format(new Date(t.created_at), "MMM d, h:mm a")
+                                        : "-"}
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-2">
@@ -171,14 +172,15 @@ export default function CustomerDetailPage() {
                                         ) : (
                                             <ArrowDownLeft className="h-4 w-4 text-green-500" />
                                         )}
-                                        <span className="font-medium text-sm text-slate-700">{t.description || t.type}</span>
+                                        <span className="font-medium text-sm text-slate-700 dark:text-slate-200">
+                                            {t.description || t.type}
+                                        </span>
                                     </div>
                                 </TableCell>
-                                <TableCell className={`text-right font-bold ${t.type === 'UTANG' ? 'text-red-600' : 'text-green-600'}`}>
+                                <TableCell className={`text-right font-bold ${t.type === 'UTANG' ? 'text-red-600 dark:text-red-500' : 'text-green-600 dark:text-green-500'}`}>
                                     {t.type === 'UTANG' ? '+' : '-'} ₱{t.amount.toLocaleString()}
                                 </TableCell>
                                 
-                                {/* TINANGGAL KO COMMENTS DITO RIN */}
                                 <TableCell>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>

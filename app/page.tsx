@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import AddCustomerBtn from "@/components/AddCustomerBtn"
 import CustomerList from "@/components/CustomerList"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 export default function Dashboard() {
   const router = useRouter()
@@ -72,12 +73,12 @@ export default function Dashboard() {
     router.push("/login")
   }
 
-  // 3. UPDATED LOADING STATE: Gamit ang Skeleton
+  // 3. UPDATED LOADING STATE: Dark Mode Aware
   if (loading) {
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
             {/* Fake Header */}
-            <header className="bg-white border-b px-6 py-4 flex justify-between items-center shadow-sm">
+            <header className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm">
                 <Skeleton className="h-6 w-32" />
                 <div className="flex gap-4">
                     <Skeleton className="h-4 w-24" />
@@ -103,13 +104,20 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+    // MAIN CONTAINER: Added dark:bg-slate-950 transition-colors
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
+      
+      {/* HEADER: Added dark:bg-slate-900 dark:border-slate-800 */}
+      <header className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
+        <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             Listahan App
         </h1>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-500 hidden sm:inline">
+          
+          {/* THEME TOGGLE BUTTON */}
+          <ThemeToggle />
+
+          <span className="text-sm text-slate-500 dark:text-slate-400 hidden sm:inline">
             {userEmail}
           </span>
           <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -122,21 +130,21 @@ export default function Dashboard() {
       <main className="p-6 max-w-5xl mx-auto space-y-6">
         
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-800">Dashboard</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">Dashboard</h2>
           <AddCustomerBtn onSuccess={handleRefresh} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2"> 
           
-          {/* 4. UPDATED CARD: Gamit na ang Wallet Icon */}
-          <Card className={stats.collectibles > 0 ? "border-l-4 border-l-orange-500 shadow-sm" : "shadow-sm"}>
+          {/* TOTAL COLLECTIBLES CARD */}
+          <Card className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${stats.collectibles > 0 ? "border-l-4 border-l-orange-500" : ""}`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Total Collectibles</CardTitle>
-              {/* Dito natin pinalit yung Wallet icon */}
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Collectibles</CardTitle>
               <Wallet className="h-4 w-4 text-slate-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${stats.collectibles > 0 ? "text-orange-600" : "text-slate-900"}`}>
+              {/* Text Color Logic with Dark Mode support */}
+              <div className={`text-2xl font-bold ${stats.collectibles > 0 ? "text-orange-600 dark:text-orange-500" : "text-slate-900 dark:text-slate-100"}`}>
                 ₱ {stats.collectibles.toLocaleString()}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -147,13 +155,14 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          {/* ACTIVE CUSTOMERS CARD */}
+          <Card className="shadow-sm dark:bg-slate-900 dark:border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Active Customers</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Active Customers</CardTitle>
               <User className="h-4 w-4 text-slate-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                 {stats.activeCustomers}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -165,7 +174,7 @@ export default function Dashboard() {
         </div>
 
         <div>
-          <h3 className="text-lg font-medium mb-4 text-slate-700">My Customers</h3>
+          <h3 className="text-lg font-medium mb-4 text-slate-700 dark:text-slate-300">My Customers</h3>
           <CustomerList refreshTrigger={refreshTrigger} />
         </div>
 

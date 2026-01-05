@@ -58,14 +58,12 @@ export default function LoginPage() {
       })
 
       if (error) {
-        // ERROR TOAST: Kulay pula automatic
         toast.error("Login Failed", {
-          description: error.message, // Dito lalabas kung "Invalid login credentials"
+          description: error.message,
         })
         return
       }
 
-      // SUCCESS TOAST: Kulay green/normal
       toast.success("Welcome back boss!", {
         description: "Redirecting to dashboard...",
       })
@@ -81,11 +79,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 p-4 transition-colors">
+
+      <Card className="w-full max-w-md dark:bg-slate-900 dark:border-slate-800">
         <CardHeader>
-          <CardTitle>Login sa Listahan</CardTitle>
-          <CardDescription>
+          <CardTitle className="dark:text-white">Login sa Listahan</CardTitle>
+          <CardDescription className="dark:text-slate-400">
             I-enter ang iyong credentials para makapasok.
           </CardDescription>
         </CardHeader>
@@ -98,9 +97,13 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="dark:text-slate-300">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="tindero@gmail.com" {...field} />
+                      <Input 
+                        placeholder="tindero@gmail.com" 
+                        {...field} 
+                        className="dark:bg-slate-950 dark:border-slate-800 dark:text-white"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -112,9 +115,14 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="dark:text-slate-300">Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="******" {...field} />
+                      <Input 
+                        type="password" 
+                        placeholder="******" 
+                        {...field} 
+                        className="dark:bg-slate-950 dark:border-slate-800 dark:text-white"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
