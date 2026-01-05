@@ -19,7 +19,11 @@ import {
 
 type Customer = Database['public']['Tables']['customers']['Row']
 
-export default function CustomerList() {
+interface Props {
+    refreshTrigger: number
+  }
+
+export default function CustomerList({ refreshTrigger }: Props) {
   const router = useRouter()
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,7 +65,7 @@ export default function CustomerList() {
     // Cleanup function: Kapag nag-type ulit si user bago matapos ang 500ms,
     // icancel ang dating timer at gumawa ng bago.
     return () => clearTimeout(timer)
-  }, [searchQuery, fetchCustomers])
+  }, [searchQuery, fetchCustomers, refreshTrigger])
 
   return (
     <div className="space-y-4">

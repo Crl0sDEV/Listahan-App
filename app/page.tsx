@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { LogOut, User, Wallet } from "lucide-react"
 import { supabase } from "@/lib/supabase"
@@ -14,11 +14,17 @@ export default function Dashboard() {
   const router = useRouter()
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
   
   const [stats, setStats] = useState({
     collectibles: 0,
     activeCustomers: 0
   })
+
+  const handleRefresh = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1)
+  }, [])
 
   useEffect(() => {
     async function getDashboardData() {
@@ -59,7 +65,7 @@ export default function Dashboard() {
     }
 
     getDashboardData()
-  }, [router])
+  }, [router, refreshTrigger])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -117,7 +123,7 @@ export default function Dashboard() {
         
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <h2 className="text-3xl font-bold tracking-tight text-slate-800">Dashboard</h2>
-          <AddCustomerBtn />
+          <AddCustomerBtn onSuccess={handleRefresh} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2"> 
@@ -160,7 +166,7 @@ export default function Dashboard() {
 
         <div>
           <h3 className="text-lg font-medium mb-4 text-slate-700">My Customers</h3>
-          <CustomerList />
+          <CustomerList refreshTrigger={refreshTrigger} />
         </div>
 
       </main>

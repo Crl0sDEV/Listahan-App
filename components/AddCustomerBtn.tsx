@@ -34,7 +34,11 @@ const formSchema = z.object({
   phone_number: z.string().optional(), // Optional kasi baka wala pang cellphone
 })
 
-export default function AddCustomerBtn() {
+interface Props {
+    onSuccess?: () => void
+  }
+
+export default function AddCustomerBtn({ onSuccess }: Props) {
   const [open, setOpen] = useState(false) // State para sa open/close ng modal
   const router = useRouter() // Pang refresh ng data
   
@@ -74,6 +78,8 @@ export default function AddCustomerBtn() {
       setOpen(false) // Close modal
       form.reset()   // Clear form
       router.refresh() // Refresh page data (pag meron na tayong listahan)
+
+      if (onSuccess) onSuccess() 
 
     } catch (error: unknown) {
         let message = "Something went wrong."
