@@ -18,6 +18,12 @@ import {
 } from "@/components/ui/table"
 
 type Customer = Database['public']['Tables']['customers']['Row']
+interface CustomerWithData extends Customer {
+  transactions: {
+    type: "UTANG" | "BAYAD" | string
+    amount: number
+  }[]
+}
 
 interface Props {
     refreshTrigger: number
@@ -25,28 +31,26 @@ interface Props {
 
 export default function CustomerList({ refreshTrigger }: Props) {
   const router = useRouter()
-  const [customers, setCustomers] = useState<Customer[]>([])
+  const [customers, setCustomers] = useState<CustomerWithData[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("") // 1. State para sa Search box
+  const [searchQuery, setSearchQuery] = useState("")
 
-  // 2. Fetch Function na tumatanggap ng query
   const fetchCustomers = useCallback(async (query: string = "") => {
     setLoading(true)
     try {
       let request = supabase
         .from('customers')
-        .select('*')
+        .select('*, transactions(type, amount)')
         .order('created_at', { ascending: false })
 
-      // 3. Filter Logic: Kung may tinype, search sa database using ILIKE
       if (query.trim().length > 0) {
-        request = request.ilike('name', `%${query}%`) // %query% means "contains"
+        request = request.ilike('name', `%${query}%`)
       }
 
       const { data, error } = await request
 
       if (error) throw error
-      if (data) setCustomers(data)
+      if (data) setCustomers(data as unknown as CustomerWithData[])
         
     } catch (error) {
       console.error("Error fetching customers:", error)
@@ -55,21 +59,24 @@ export default function CustomerList({ refreshTrigger }: Props) {
     }
   }, [])
 
-  // 4. DEBOUNCE EFFECT
   useEffect(() => {
-    // Gumawa ng timer
     const timer = setTimeout(() => {
       fetchCustomers(searchQuery)
-    }, 500) // Maghintay ng 500ms (kalahating segundo) bago mag search
+    }, 500)
 
-    // Cleanup function: Kapag nag-type ulit si user bago matapos ang 500ms,
-    // icancel ang dating timer at gumawa ng bago.
     return () => clearTimeout(timer)
   }, [searchQuery, fetchCustomers, refreshTrigger])
 
+  const getBalance = (transactions: CustomerWithData['transactions']) => {
+    return transactions.reduce((acc, curr) => {
+        if (curr.type === 'UTANG') return acc + curr.amount
+        if (curr.type === 'BAYAD') return acc - curr.amount
+        return acc
+    }, 0)
+  }
+
   return (
     <div className="space-y-4">
-      {/* 5. SEARCH BAR SECTION */}
       <div className="relative">
         {loading ? (
             <Loader2 className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500 animate-spin" />
@@ -86,53 +93,55 @@ export default function CustomerList({ refreshTrigger }: Props) {
         />
       </div>
 
-      {/* LOADING STATE */}
       {loading ? (
         <div className="space-y-3">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full bg-slate-200 dark:bg-slate-800" />
+          <Skeleton className="h-12 w-full bg-slate-200 dark:bg-slate-800" />
+          <Skeleton className="h-12 w-full bg-slate-200 dark:bg-slate-800" />
         </div>
       ) : customers.length === 0 ? (
-        // EMPTY STATE
         <div className="text-center py-10 border rounded-lg bg-white dark:bg-slate-900 dark:border-slate-800 border-dashed">
-          <User className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500">
+          <User className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+          <p className="text-slate-500 dark:text-slate-400">
             {searchQuery ? "No customer found." : "Wala pang customers, boss."}
           </p>
-          {!searchQuery && (
-            <p className="text-xs text-slate-400">
-              Click mo yung &quot;+ Add Customer&quot; sa taas.
-            </p>
-          )}
         </div>
       ) : (
-        // DATA TABLE
-        <div className="rounded-md border bg-white dark:bg-slate-900 dark:border-slate-800">
+        <div className="rounded-md border bg-white dark:bg-slate-900 dark:border-slate-800 overflow-hidden">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-slate-50 dark:bg-slate-950">
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead className="text-right">Joined</TableHead>
+                <TableHead className="text-slate-500 dark:text-slate-400">Name</TableHead>
+                <TableHead className="text-slate-500 dark:text-slate-400">Phone</TableHead>
+                {/* ADDED HEADER */}
+                <TableHead className="text-slate-500 dark:text-slate-400">Balance</TableHead>
+                <TableHead className="text-right text-slate-500 dark:text-slate-400">Joined</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {customers.map((customer) => (
-                <TableRow
-                key={customer.id}
-                className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                onClick={() => router.push(`/customer/${customer.id}`)}
-              >
-                  <TableCell className="font-medium">{customer.name}</TableCell>
-                  <TableCell>{customer.phone_number || "-"}</TableCell>
-                  <TableCell className="text-right text-slate-500">
-                    {customer.created_at
-                      ? format(new Date(customer.created_at), "MMM d, yyyy")
-                      : "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {customers.map((customer) => {
+                const balance = getBalance(customer.transactions)
+                
+                return (
+                    <TableRow
+                    key={customer.id}
+                    className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b dark:border-slate-800"
+                    onClick={() => router.push(`/customer/${customer.id}`)}
+                    >
+                    <TableCell className="font-medium text-slate-900 dark:text-slate-100">{customer.name}</TableCell>
+                    <TableCell className="text-slate-600 dark:text-slate-400">{customer.phone_number || "-"}</TableCell>
+                    <TableCell className={`font-bold ${balance > 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
+                        ₱ {balance.toLocaleString()}
+                    </TableCell>
+
+                    <TableCell className="text-right text-slate-500 dark:text-slate-500">
+                        {customer.created_at
+                        ? format(new Date(customer.created_at), "MMM d, yyyy")
+                        : "-"}
+                    </TableCell>
+                    </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </div>

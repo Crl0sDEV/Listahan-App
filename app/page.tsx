@@ -137,14 +137,14 @@ export default function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2"> 
           
           {/* TOTAL COLLECTIBLES CARD */}
-          <Card className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${stats.collectibles > 0 ? "border-l-4 border-l-orange-500" : ""}`}>
+          <Card className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${stats.collectibles > 0 ? "border-l-4 border-l-red-500" : ""}`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Collectibles</CardTitle>
               <Wallet className="h-4 w-4 text-slate-400" />
             </CardHeader>
             <CardContent>
               {/* Text Color Logic with Dark Mode support */}
-              <div className={`text-2xl font-bold ${stats.collectibles > 0 ? "text-orange-600 dark:text-orange-500" : "text-slate-900 dark:text-slate-100"}`}>
+              <div className={`text-2xl font-bold ${stats.collectibles > 0 ? "text-red-600 dark:text-red-500" : "text-slate-900 dark:text-slate-100"}`}>
                 ₱ {stats.collectibles.toLocaleString()}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
