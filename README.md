@@ -11,7 +11,7 @@
 
 ## 📸 Snapshot
 
-![Project Preview](/public/screenshots/listahan-app.png)
+![Project Preview](/public/listahan-app.png)
 
 ---
 
