@@ -120,97 +120,116 @@ export default function Dashboard() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
-      <header className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
-        {/* DYNAMIC STORE NAME */}
-        <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-          {storeName}
-        </h1>
+return (
+  <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
+    
+    <header className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-4 py-3 sm:px-6 sm:py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
+      
+      <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 truncate max-w-37.5 sm:max-w-none">
+        {storeName}
+      </h1>
 
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
+      <div className="flex items-center gap-2 sm:gap-4">
+        <ThemeToggle />
 
-          {/* SETTINGS BUTTON */}
-          <Link href="/settings">
-            <Button variant="ghost" size="icon" title="Settings">
-              <Settings className="h-5 w-5 text-slate-500 dark:text-slate-400" />
-            </Button>
-          </Link>
-
-          <span className="text-sm text-slate-500 dark:text-slate-400 hidden sm:inline">
-            {userEmail}
-          </span>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
+        <Link href="/settings">
+          <Button variant="ghost" size="icon" title="Settings">
+            <Settings className="h-5 w-5 text-slate-500 dark:text-slate-400" />
           </Button>
-        </div>
-      </header>
+        </Link>
 
-      <main className="p-6 max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
-            Dashboard
-          </h2>
+        <span className="text-sm text-slate-500 dark:text-slate-400 hidden md:inline">
+          {userEmail}
+        </span>
+
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={handleLogout} 
+          className="sm:hidden text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+        >
+          <LogOut className="h-5 w-5" />
+        </Button>
+
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleLogout} 
+          className="hidden sm:flex"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
+        </Button>
+        
+      </div>
+    </header>
+
+    <main className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
+          Dashboard
+        </h2>
+       
+        <div className="w-full sm:w-auto">
           <AddCustomerBtn onSuccess={handleRefresh} />
         </div>
+      </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card
-            className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${
-              stats.collectibles > 0 ? "border-l-4 border-l-red-500" : ""
-            }`}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Total Collectibles
-              </CardTitle>
-              <Wallet className="h-4 w-4 text-slate-400" />
-            </CardHeader>
-            <CardContent>
-              <div
-                className={`text-2xl font-bold ${
-                  stats.collectibles > 0
-                    ? "text-red-600 dark:text-red-500"
-                    : "text-slate-900 dark:text-slate-100"
-                }`}
-              >
-                ₱ {stats.collectibles.toLocaleString()}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {stats.collectibles > 0
-                  ? "Kabuuang pautang na nasa labas pa."
-                  : "Walang utang ang mga suki!"}
-              </p>
-            </CardContent>
-          </Card>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+        <Card
+          className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${
+            stats.collectibles > 0 ? "border-l-4 border-l-red-500" : ""
+          }`}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
+              Total Collectibles
+            </CardTitle>
+            <Wallet className="h-4 w-4 text-slate-400" />
+          </CardHeader>
+          <CardContent>
+            <div
+              className={`text-2xl font-bold ${
+                stats.collectibles > 0
+                  ? "text-red-600 dark:text-red-500"
+                  : "text-slate-900 dark:text-slate-100"
+              }`}
+            >
+              ₱ {stats.collectibles.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {stats.collectibles > 0
+                ? "Kabuuang pautang na nasa labas pa."
+                : "Walang utang ang mga suki!"}
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="shadow-sm dark:bg-slate-900 dark:border-slate-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Active Customers
-              </CardTitle>
-              <User className="h-4 w-4 text-slate-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {stats.activeCustomers}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Registered suki count
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="shadow-sm dark:bg-slate-900 dark:border-slate-800">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
+              Active Customers
+            </CardTitle>
+            <User className="h-4 w-4 text-slate-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              {stats.activeCustomers}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Registered suki count
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-        <div>
-          <h3 className="text-lg font-medium mb-4 text-slate-700 dark:text-slate-300">
-            My Customers
-          </h3>
-          <CustomerList refreshTrigger={refreshTrigger} />
-        </div>
-      </main>
-    </div>
-  );
+      <div>
+        <h3 className="text-lg font-medium mb-4 text-slate-700 dark:text-slate-300">
+          My Customers
+        </h3>
+        <CustomerList refreshTrigger={refreshTrigger} />
+      </div>
+    </main>
+  </div>
+);
 }
