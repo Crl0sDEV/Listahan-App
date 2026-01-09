@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, User, Wallet } from "lucide-react";
+import { LogOut, User, Wallet, Settings } from "lucide-react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [storeName, setStoreName] = useState("Listahan App");
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -30,6 +32,13 @@ export default function Dashboard() {
   useEffect(() => {
     async function getDashboardData() {
       try {
+        if (
+          window.location.hash &&
+          window.location.hash.includes("access_token")
+        ) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -40,6 +49,16 @@ export default function Dashboard() {
         }
 
         setUserEmail(user.email ?? null);
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("store_name")
+          .eq("id", user.id)
+          .single();
+
+        if (profile?.store_name) {
+          setStoreName(profile.store_name);
+        }
 
         const [customersResponse, transactionsResponse] = await Promise.all([
           supabase
@@ -104,12 +123,20 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
       <header className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-10">
+        {/* DYNAMIC STORE NAME */}
         <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-          Listahan App
+          {storeName}
         </h1>
-        <div className="flex items-center gap-4">
 
+        <div className="flex items-center gap-4">
           <ThemeToggle />
+
+          {/* SETTINGS BUTTON */}
+          <Link href="/settings">
+            <Button variant="ghost" size="icon" title="Settings">
+              <Settings className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+            </Button>
+          </Link>
 
           <span className="text-sm text-slate-500 dark:text-slate-400 hidden sm:inline">
             {userEmail}
@@ -130,7 +157,6 @@ export default function Dashboard() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          
           <Card
             className={`shadow-sm dark:bg-slate-900 dark:border-slate-800 ${
               stats.collectibles > 0 ? "border-l-4 border-l-red-500" : ""
@@ -143,7 +169,6 @@ export default function Dashboard() {
               <Wallet className="h-4 w-4 text-slate-400" />
             </CardHeader>
             <CardContent>
-              
               <div
                 className={`text-2xl font-bold ${
                   stats.collectibles > 0

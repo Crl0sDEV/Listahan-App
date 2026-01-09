@@ -26,6 +26,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { CardFooter } from "@/components/ui/card"
+import Link from "next/link"
 
 const formSchema = z.object({
   email: z.string().email({
@@ -142,6 +144,14 @@ export default function LoginPage() {
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+                Wala pang account?{" "}
+                <Link href="/signup" className="text-blue-600 hover:underline dark:text-blue-400">
+                    Sign up here.
+                </Link>
+            </p>
+        </CardFooter>
       </Card>
     </div>
   )
